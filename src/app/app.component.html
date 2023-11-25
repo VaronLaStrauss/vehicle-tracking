@@ -1,0 +1,58 @@
+<div class="h-screen w-screen flex flex-row">
+  <div class="flex-auto grid grid-cols-8 gap-2 place-items-center">
+    @for(vehicle of vehicles(); track vehicle; let vehicleIdx = $index) {
+    <mat-card class="lg:col-span-2 md:col-span-4 col-span-8">
+      <mat-card-header>
+        <mat-card-title>
+          {{ vehicle.name }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{ vehicle.currentLocation }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="w-fit h-fit">
+        <mat-icon class="text-7xl w-fit h-fit">local_shipping</mat-icon>
+      </mat-card-content>
+
+      <mat-card-actions class="flex flex-col items-center">
+        @if(!moving.has(vehicleIdx) && !errors.has(vehicleIdx)) {
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="updateMovement(vehicle.currentLocation, vehicleIdx)"
+        >
+          Send It!
+        </button>
+        } @if(errors.get(vehicleIdx); as error) {
+        <span>There seems to be a problem!!! {{ error.problem }}</span>
+        <button mat-flat-button color="primary" (click)="fixProblem(error)">
+          {{ error.solution }}
+        </button>
+
+        }
+      </mat-card-actions>
+
+      <mat-card-footer>
+        @if(moving.get(vehicleIdx); as movement) {
+        <!-- <mat-progress-bar
+          mode="determinate"
+          [value]="getRuntime(movement.movement.time)"
+        ></mat-progress-bar> -->
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+      </mat-card-footer>
+    </mat-card>
+    }
+  </div>
+
+  <div class="flex-shrink-0 w-80 overflow-auto">
+    <mat-toolbar>Notifications</mat-toolbar>
+    @for(update of updates$ | async; track update) {
+    <mat-card class="m-4">
+      <mat-card-content>
+        {{ getUpdateLabel(update) }}
+      </mat-card-content>
+    </mat-card>
+    }
+  </div>
+</div>
